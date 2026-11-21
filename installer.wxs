@@ -1,0 +1,35 @@
+<Wix xmlns="http://wixtoolset.org/schemas/v4/wxs">
+  <Package Name="Internet Speed Meter"
+           Manufacturer="ShahidRaaz"
+           Version="1.0.0"
+           UpgradeCode="4E858249-B2C3-4B82-9BE6-9BD3D09F1E28">
+    <MajorUpgrade DowngradeErrorMessage="A newer version of [ProductName] is already installed." />
+
+    <MediaTemplate EmbedCab="yes" />
+
+    <StandardDirectory Id="LocalAppDataFolder">
+      <Directory Id="INSTALLFOLDER" Name="InternetSpeedMeter">
+        <Component Id="MainExecutable" Guid="7C3F8B32-5B4A-4D2A-98C1-8263152F9420">
+          <File Id="AppExe" Source="publish\InternetSpeedMeter.exe" KeyPath="yes" />
+        </Component>
+      </Directory>
+    </StandardDirectory>
+
+    <StandardDirectory Id="ProgramMenuFolder">
+      <Component Id="AppShortcutComponent" Guid="A2C198E4-7E11-4C59-8752-9A4B12C94567">
+        <Shortcut Id="ApplicationStartMenuShortcut"
+                  Name="Internet Speed Meter"
+                  Description="Windows 11 Taskbar Internet Speed Meter"
+                  Target="[INSTALLFOLDER]InternetSpeedMeter.exe"
+                  WorkingDirectory="INSTALLFOLDER" />
+        <RemoveFolder Id="CleanUpShortCut" On="uninstall" />
+        <RegistryValue Root="HKCU" Key="Software\InternetSpeedMeter" Name="installed" Type="integer" Value="1" KeyPath="yes" />
+      </Component>
+    </StandardDirectory>
+
+    <Feature Id="Main">
+      <ComponentRef Id="MainExecutable" />
+      <ComponentRef Id="AppShortcutComponent" />
+    </Feature>
+  </Package>
+</Wix>

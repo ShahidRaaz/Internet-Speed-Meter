@@ -1,0 +1,23 @@
+# Build output and intermediate directories
+bin/
+obj/
+app/
+build/
+publish/
+dist/
+
+# Local .NET / NuGet caching
+.appdata/
+.dotnet/
+
+# Visual Studio / VS Code
+.vs/
+.vscode/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# Logs and runtime local configs
+*.log
+meter_pos.json

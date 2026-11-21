@@ -7,6 +7,15 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <UseWPF>true</UseWPF>
     <ApplicationManifest>app.manifest</ApplicationManifest>
+
+    <!-- App Metadata & Versioning -->
+    <Version>1.0.0</Version>
+    <AssemblyVersion>1.0.0.0</AssemblyVersion>
+    <FileVersion>1.0.0.0</FileVersion>
+    <Product>Internet Speed Meter</Product>
+    <Company>ShahidRaaz</Company>
+    <Description>Windows 11 Taskbar Internet Speed Meter Widget</Description>
+    <Copyright>Copyright © 2026 ShahidRaaz</Copyright>
   </PropertyGroup>
 
   <ItemGroup>
