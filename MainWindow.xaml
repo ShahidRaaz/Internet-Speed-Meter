@@ -1,0 +1,251 @@
+<Window x:Class="InternetSpeedMeter.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Internet Speed Meter"
+        Height="38"
+        MinWidth="120"
+        SizeToContent="Width"
+        WindowStyle="None"
+        AllowsTransparency="True"
+        Background="Transparent"
+        Topmost="True"
+        ShowInTaskbar="False"
+        ResizeMode="NoResize"
+        Loaded="Window_Loaded"
+        Closed="Window_Closed">
+
+    <Window.Resources>
+        <!-- Taskbar Hover Brush (Windows 11 Fluent Taskbar item hover) -->
+        <SolidColorBrush x:Key="TaskbarHoverBrush" Color="#15FFFFFF"/>
+        <SolidColorBrush x:Key="MenuItemHoverBrush" Color="#14FFFFFF"/>
+        <SolidColorBrush x:Key="MenuSeparatorBrush" Color="#3A3A3A"/>
+
+        <!-- Clean Windows 11 MenuItem Style (Eliminates the empty icon gutter) -->
+        <Style x:Key="CleanMenuItem" TargetType="MenuItem">
+            <Setter Property="Foreground" Value="{Binding Path=Foreground, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
+            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="FontFamily" Value="Segoe UI Variable Text, Segoe UI, sans-serif"/>
+            <Setter Property="Padding" Value="8,6,12,6"/>
+            <Setter Property="Margin" Value="2,1"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="MenuItem">
+                        <Border x:Name="ItemBorder"
+                                Background="Transparent"
+                                CornerRadius="4"
+                                Padding="{TemplateBinding Padding}"
+                                Margin="{TemplateBinding Margin}">
+                            <ContentPresenter ContentSource="Header"
+                                              RecognizesAccessKey="True"
+                                              VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsHighlighted" Value="True">
+                                <Setter TargetName="ItemBorder" Property="Background" Value="{DynamicResource MenuItemHoverBrush}"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- Windows 11 Fluent ToolTip Style -->
+        <Style x:Key="FluentToolTip" TargetType="ToolTip">
+            <Setter Property="HasDropShadow" Value="False"/>
+            <Setter Property="Background" Value="#2C2C2C"/>
+            <Setter Property="Foreground" Value="#FFFFFF"/>
+            <Setter Property="BorderBrush" Value="#383838"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Padding" Value="8,4,8,5"/>
+            <Setter Property="FontSize" Value="11.5"/>
+            <Setter Property="FontFamily" Value="Segoe UI Variable Text, Segoe UI, sans-serif"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ToolTip">
+                        <Border Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                CornerRadius="5"
+                                Padding="{TemplateBinding Padding}">
+                            <ContentPresenter/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- Context Menu with Official Windows 11 Fluent Icons -->
+        <ContextMenu x:Key="MeterContextMenu"
+                     HasDropShadow="False"
+                     Background="#262626"
+                     Foreground="#FFFFFF"
+                     BorderBrush="#3A3A3A"
+                     BorderThickness="1"
+                     Padding="3,3">
+            <ContextMenu.Template>
+                <ControlTemplate TargetType="ContextMenu">
+                    <Border Background="{TemplateBinding Background}"
+                            BorderBrush="{TemplateBinding BorderBrush}"
+                            BorderThickness="{TemplateBinding BorderThickness}"
+                            CornerRadius="8"
+                            Padding="{TemplateBinding Padding}">
+                        <StackPanel IsItemsHost="True"/>
+                    </Border>
+                </ControlTemplate>
+            </ContextMenu.Template>
+
+            <!-- Item 1: Settings (Win11 Settings Gear: \uE713) -->
+            <MenuItem Style="{StaticResource CleanMenuItem}" Click="SettingsMenuItem_Click">
+                <MenuItem.Header>
+                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                        <TextBlock Text="&#xE713;"
+                                   FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets"
+                                   Width="18"
+                                   TextAlignment="Center"
+                                   Margin="0,0,8,0"
+                                   FontSize="13"
+                                   VerticalAlignment="Center"/>
+                        <TextBlock Text="Settings" FontSize="12" VerticalAlignment="Center"/>
+                    </StackPanel>
+                </MenuItem.Header>
+            </MenuItem>
+
+            <!-- Item 2: Auto-Align Taskbar (Win11 Refresh: \uE72C) -->
+            <MenuItem Style="{StaticResource CleanMenuItem}" Click="ResetPosMenuItem_Click">
+                <MenuItem.Header>
+                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                        <TextBlock Text="&#xE72C;"
+                                   FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets"
+                                   Width="18"
+                                   TextAlignment="Center"
+                                   Margin="0,0,8,0"
+                                   FontSize="13"
+                                   VerticalAlignment="Center"/>
+                        <TextBlock Text="Auto-Align Taskbar" FontSize="12" VerticalAlignment="Center"/>
+                    </StackPanel>
+                </MenuItem.Header>
+            </MenuItem>
+
+            <Separator Background="{DynamicResource MenuSeparatorBrush}" Margin="6,3"/>
+
+            <!-- Item 3: Exit (Win11 Dismiss/Close: \uE711) -->
+            <MenuItem Style="{StaticResource CleanMenuItem}" Click="ExitMenuItem_Click">
+                <MenuItem.Header>
+                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                        <TextBlock Text="&#xE711;"
+                                   FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets"
+                                   Width="18"
+                                   TextAlignment="Center"
+                                   Margin="0,0,8,0"
+                                   FontSize="13"
+                                   VerticalAlignment="Center"/>
+                        <TextBlock Text="Exit" FontSize="12" VerticalAlignment="Center"/>
+                    </StackPanel>
+                </MenuItem.Header>
+            </MenuItem>
+        </ContextMenu>
+    </Window.Resources>
+
+    <!-- Transparent Container with Windows 11 Taskbar Hover Effect & Click to Open Settings -->
+    <Border x:Name="MainBadge"
+            Padding="12,2,20,2"
+            ContextMenu="{StaticResource MeterContextMenu}"
+            Cursor="Hand"
+            ToolTipService.InitialShowDelay="400"
+            ToolTipService.BetweenShowDelay="100"
+            MouseLeftButtonUp="MainBadge_MouseLeftButtonUp">
+
+        <Border.ToolTip>
+            <ToolTip x:Name="BadgeToolTip"
+                     Style="{StaticResource FluentToolTip}"
+                     Placement="Top"
+                     PlacementTarget="{Binding ElementName=MainBadge}"
+                     VerticalOffset="-6"
+                     Opened="BadgeToolTip_Opened"
+                     Closed="BadgeToolTip_Closed"
+                     Content="Click for Settings. Right-click for menu."/>
+        </Border.ToolTip>
+
+        <Border.Style>
+            <Style TargetType="Border">
+                <Setter Property="Background" Value="#01000000"/>
+                <Setter Property="CornerRadius" Value="4"/>
+                <Style.Triggers>
+                    <Trigger Property="IsMouseOver" Value="True">
+                        <Setter Property="Background" Value="{DynamicResource TaskbarHoverBrush}"/>
+                    </Trigger>
+                </Style.Triggers>
+            </Style>
+        </Border.Style>
+
+        <Grid VerticalAlignment="Center">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+
+            <!-- LEFT: Crisp Dual Vector Arrow (No shadow, selective active opacity) -->
+            <Grid Grid.Column="0" Width="24" Height="26" Margin="0,0,6,0" VerticalAlignment="Center">
+                <Canvas Width="24" Height="26">
+                    <!-- Download Arrow (Left) - Dims when idle, full opacity when active -->
+                    <Path x:Name="DownArrowPath"
+                          Data="M 5,3 L 5,19 M 1.5,15.5 L 5,19.5 L 8.5,15.5"
+                          Stroke="#4CC2FF"
+                          StrokeThickness="2.5"
+                          StrokeStartLineCap="Round"
+                          StrokeEndLineCap="Round"
+                          StrokeLineJoin="Round"
+                          Opacity="0.25"/>
+
+                    <!-- Upload Arrow (Right) - Dims when idle, full opacity when active -->
+                    <Path x:Name="UpArrowPath"
+                          Data="M 19,23 L 19,7 M 15.5,10.5 L 19,6.5 L 22.5,10.5"
+                          Stroke="#6CCB5F"
+                          StrokeThickness="2.5"
+                          StrokeStartLineCap="Round"
+                          StrokeEndLineCap="Round"
+                          StrokeLineJoin="Round"
+                          Opacity="0.25"/>
+                </Canvas>
+            </Grid>
+
+            <!-- RIGHT: 2-Line Speed Count (User preserved DW/UP and 12pt size) -->
+            <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                <!-- Line 1: Download Speed -->
+                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                    <TextBlock x:Name="DownSymbolText"
+                               Text="DW: "
+                               FontSize="10.5"
+                               FontWeight="Bold"
+                               Foreground="#4CC2FF"
+                               VerticalAlignment="Center"/>
+                    <TextBlock x:Name="DownSpeedText"
+                               Text="0.0 KB/s"
+                               FontSize="12"
+                               FontFamily="Segoe UI Variable Text, Segoe UI, sans-serif"
+                               FontWeight="SemiBold"
+                               Foreground="#FFFFFF"
+                               VerticalAlignment="Center"/>
+                </StackPanel>
+
+                <!-- Line 2: Upload Speed -->
+                <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="0,1,0,0">
+                    <TextBlock x:Name="UpSymbolText"
+                               Text="UP: "
+                               FontSize="10.5"
+                               FontWeight="Bold"
+                               Foreground="#6CCB5F"
+                               VerticalAlignment="Center"/>
+                    <TextBlock x:Name="UpSpeedText"
+                               Text="0.0 KB/s"
+                               FontSize="12"
+                               FontFamily="Segoe UI Variable Text, Segoe UI, sans-serif"
+                               FontWeight="SemiBold"
+                               Foreground="#C8C8C8"
+                               VerticalAlignment="Center"/>
+                </StackPanel>
+            </StackPanel>
+        </Grid>
+    </Border>
+</Window>
